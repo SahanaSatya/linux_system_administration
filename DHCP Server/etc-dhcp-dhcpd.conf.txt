@@ -1,0 +1,44 @@
+subnet 100.64.144.0 netmask 255.255.255.0 {
+
+        option routers 100.64.144.1;
+        option domain-name-servers 100.64.144.4;
+        option domain-name "dundermifflin.com";
+        host machinea {
+                hardware ethernet 00:50:56:b4:08:03;
+                fixed-address 100.64.144.1;
+                option host-name "router.dundermifflin.com";
+}
+host machineb {
+                hardware ethernet 00:50:56:b4:e6:5b;
+                fixed-address 100.64.144.2;
+                option host-name "carriage.dundermifflin.com";
+}
+host machinec {
+                hardware ethernet 00:50:56:b4:8a:44;
+                fixed-address 100.64.144.3;
+                option host-name "platen.dundermifflin.com";
+}
+host machined {
+                hardware ethernet 00:50:56:b4:10:31;
+                fixed-address 100.64.144.4;
+                option host-name "chase.dundermifflin.com";
+}
+host machinef {
+                hardware ethernet 00:50:56:b4:06:51;
+                fixed-address 100.64.144.5;
+                option host-name "saddle.dundermifflin.com";
+}
+
+}
+subnet 10.21.32.0 netmask 255.255.255.0 {
+
+        option routers 10.21.32.1;
+        option domain-name-servers 100.64.144.4;
+        option domain-name "dundermifflin.com";
+
+ host machinee {
+                hardware ethernet 00:50:56:b4:df:08;
+                fixed-address 10.21.32.2;
+                option host-name "roller.dundermifflin.com";
+}
+}

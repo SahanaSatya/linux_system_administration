@@ -1,0 +1,106 @@
+# input table
+iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+iptables -A INPUT -i lo -j ACCEPT
+iptables -A INPUT -p udp -m multiport --dport 67,68 -j ACCEPT
+iptables -A INPUT -p udp -m multiport --sport 67,68 -j ACCEPT
+iptables -A INPUT -s 100.64.0.0/16 -p tcp --dport=22 -m state --state NEW -j ACCEPT
+iptables -A INPUT -s 100.64.144.0/24 -p tcp --dport=22 -m state --state NEW -j ACCEPT
+iptables -A INPUT -s 100.64.254.0/24 -p tcp --dport=22 -m state --state NEW -j ACCEPT
+iptables -A INPUT -s 10.21.32.0/24 -p tcp --dport=22 -m state --state NEW -j ACCEPT
+iptables -A INPUT -s 198.18.0.0/16 -p tcp --dport=22 -m state --state NEW -j ACCEPT
+iptables -A INPUT -s 157.240.18.35 -j DROP
+iptables -A INPUT -s 54.67.58.251 -j DROP
+iptables -A INPUT -s 54.193.38.238 -j DROP
+iptables -A INPUT -s 216.176.177.74 -j DROP
+iptables -A INPUT -s facebook.com -j DROP
+iptables -A INPUT -s icanhas.cheezburger.com -j DROP
+iptables -A INPUT -s cheezburger.com -j DROP
+iptables -A INPUT -p icmp --icmp-type echo-request -j ACCEPT
+iptables -A INPUT -p icmp --icmp-type echo-reply -j ACCEPT
+iptables -A INPUT -p icmp --icmp-type time-exceeded -j ACCEPT
+iptables -A INPUT -p icmp --icmp-type destination-unreachable -j ACCEPT
+# output table
+iptables -A OUTPUT -d 157.240.18.35 -j DROP
+iptables -A OUTPUT -d 54.67.58.251 -j DROP
+iptables -A OUTPUT -d 54.193.38.238 -j DROP
+iptables -A OUTPUT -d 216.176.177.74 -j DROP
+iptables -A OUTPUT -d facebook.com -j DROP
+iptables -A OUTPUT -d icanhas.cheezburger.com -j DROP
+iptables -A OUTPUT -d cheezburger.com -j DROP
+# forward table
+iptables -A FORWARD -m state --state ESTABLISHED,RELATED -j ACCEPT
+# blocking websites
+iptables -A FORWARD -d 157.240.18.35 -j DROP
+iptables -A FORWARD -s 157.240.18.35 -j DROP
+iptables -A FORWARD -d 54.67.58.251 -j DROP
+iptables -A FORWARD -s 54.67.58.251 -j DROP
+iptables -A FORWARD -d 54.193.38.238 -j DROP
+iptables -A FORWARD -s 54.193.38.238 -j DROP
+iptables -A FORWARD -d 216.176.177.74 -j DROP
+iptables -A FORWARD -s 216.176.177.74 -j DROP
+iptables -A FORWARD -d facebook.com -j DROP
+iptables -A FORWARD -s facebook.com -j DROP
+iptables -A FORWARD -d icanhas.cheezburger.com -j DROP
+iptables -A FORWARD -s icanhas.cheezburger.com -j DROP
+iptables -A FORWARD -d cheezburger.com -j DROP
+iptables -A FORWARD -s cheezburger.com -j DROP
+#ssh for DMZ
+iptables -A FORWARD -s 100.64.0.0/16 -d 100.64.144.0/24 -p tcp --dport=22 -m state --state NEW -j ACCEPT
+iptables -A FORWARD -s 100.64.144.0/24 -d 100.64.144.0/24 -p tcp --dport=22 -m state --state NEW -j ACCEPT
+iptables -A FORWARD -s 100.64.254.0/24 -d 100.64.144.0/24 -p tcp --dport=22 -m state --state NEW -j ACCEPT
+iptables -A FORWARD -s 10.21.32.0/24 -d 100.64.144.0/24 -p tcp --dport=22 -m state --state NEW -j ACCEPT
+iptables -A FORWARD -s 198.18.0.0/16 -d 100.64.144.0/24 -p tcp --dport=22 -m state --state NEW -j ACCEPT
+iptables -A FORWARD -s 100.64.144.0/24 -d 198.18.0.0/16 -p tcp --sport=22 -m state --state NEW -j ACCEPT
+#icmp traffic
+iptables -A FORWARD -p icmp --icmp-type echo-request -j ACCEPT
+iptables -A FORWARD -p icmp --icmp-type echo-reply -j ACCEPT
+iptables -A FORWARD -p icmp --icmp-type time-exceeded -j ACCEPT
+iptables -A FORWARD -p icmp --icmp-type destination-unreachable -j ACCEPT
+#Machines B and F
+iptables -A FORWARD -d 100.64.144.2 -p tcp --dport=80 -m state --state NEW -j ACCEPT
+iptables -A FORWARD -d 100.64.144.2 -p tcp --dport=443 -m state --state NEW -j ACCEPT
+iptables -A FORWARD -d 100.64.144.5 -p tcp --dport=80 -m state --state NEW -j ACCEPT
+iptables -A FORWARD -d 100.64.144.5 -p tcp --dport=443 -m state --state NEW -j ACCEPT
+#Machine C
+iptables -A FORWARD -s 100.64.0.0/16 -d 100.64.144.3 -j ACCEPT
+iptables -A FORWARD -s 100.64.0.0/16 -d 100.64.144.3 -p tcp --dport=20 -m state --state NEW -j ACCEPT
+iptables -A FORWARD -s 100.64.0.0/16 -d 100.64.144.3 -p tcp --dport=21 -m state --state NEW -j ACCEPT
+iptables -A FORWARD -s 172.20.74.249 -d 100.64.144.3 -p tcp --dport=20 -m state --state NEW -j ACCEPT
+iptables -A FORWARD -s 172.20.74.249 -d 100.64.144.3 -p tcp --dport=21 -m state --state NEW -j ACCEPT
+iptables -A FORWARD -s 100.64.144.3 -d 100.64.144.4 -p udp --dport=53 -j ACCEPT
+iptables -A FORWARD -s 100.64.144.3 -d 100.64.144.4 -p tcp --dport=53 -j ACCEPT
+# Not allowing Machine C packets to Machine E
+iptables -A FORWARD -s 100.64.144.3 -d 10.21.32.0/24 -p tcp --dport=20 -j DROP
+iptables -A FORWARD -s 100.64.144.3 -d 10.21.32.0/24 -p tcp --dport=21 -j DROP
+iptables -A FORWARD -s 100.64.144.3 -d 10.21.32.0/24 -p tcp --dport=22 -j DROP
+iptables -A FORWARD -s 100.64.144.3 -d 10.21.32.0/24 -p tcp --dport=80 -j DROP
+iptables -A FORWARD -s 100.64.144.3 -d 10.21.32.0/24 -p tcp --dport=443 -j DROP
+#Allowing to connect to hosts other than E by machine C
+iptables -A FORWARD -s 100.64.144.3 -p tcp --dport=20 -j ACCEPT
+iptables -A FORWARD -s 100.64.144.3 -p tcp --dport=21 -j ACCEPT
+iptables -A FORWARD -s 100.64.144.3 -p tcp --dport=22 -j ACCEPT
+iptables -A FORWARD -s 100.64.144.3 -p tcp --dport=80 -j ACCEPT
+iptables -A FORWARD -s 100.64.144.3 -p tcp --dport=443 -j ACCEPT
+#Machine D
+iptables -A FORWARD -d 100.64.144.4 -p udp --dport=53 -m state --state NEW -j ACCEPT
+iptables -A FORWARD -d 100.64.144.4 -p tcp --dport=53 -m state --state NEW -j ACCEPT
+#Machine E
+iptables -A FORWARD -d 10.21.32.2 -s 10.21.32.0/24 -p tcp --dport=22 -m state --state NEW -j ACCEPT
+iptables -A FORWARD -d 10.21.32.2 -s 100.64.0.144 -p tcp --dport=22 -m state --state NEW -j ACCEPT
+iptables -A FORWARD -d 10.21.32.2 -s 10.21.32.0/24 -p tcp --dport=135 -m state --state NEW -j ACCEPT
+iptables -A FORWARD -d 10.21.32.2 -s 10.21.32.0/24 -p udp --dport=137 -m state --state NEW -j ACCEPT
+iptables -A FORWARD -d 10.21.32.2 -s 10.21.32.0/24 -p udp --dport=138 -m state --state NEW -j ACCEPT
+iptables -A FORWARD -d 10.21.32.2 -s 10.21.32.0/24 -p udp --dport=139 -m state --state NEW -j ACCEPT
+iptables -A FORWARD -d 10.21.32.2 -s 10.21.32.0/24 -p tcp --dport=445 -m state --state NEW -j ACCEPT
+#default policies of other machines
+iptables -A FORWARD -d 100.64.144.2 -j DROP
+iptables -A FORWARD -s 100.64.144.3 -j DROP
+iptables -A FORWARD -d 100.64.144.3 -j DROP
+iptables -A FORWARD -d 100.64.144.4 -j DROP
+iptables -A FORWARD -d 10.21.32.2 -j DROP
+iptables -A FORWARD -d 100.64.144.5 -j DROP
+iptables -A FORWARD -i ens192 -j DROP
+#default policy of router
+iptables -P INPUT DROP
+iptables -P OUTPUT ACCEPT
+iptables -P FORWARD ACCEPT
